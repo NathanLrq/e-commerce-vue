@@ -1,13 +1,18 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { connectDB } from './config/database.js';
 import authRoutes from './routes/authRoutes.js';
+import dotenv from 'dotenv';
+dotenv.config();
+
+
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3001;
+console.log('>> Port utilisé :', port);
+
 
 // Ne pas connecter MongoDB si en mode test
 if (process.env.NODE_ENV !== 'test') {
@@ -42,7 +47,7 @@ app.get('/api/auth/ping', (req, res) => {
   res.json({ message: 'Auth service is reachable' });
 });
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(port, () => {
+  app.listen(port, '0.0.0.0', () => {
     console.log(`Auth service running on port ${port}`);
   });
 }
