@@ -1,10 +1,12 @@
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_ORDER_SERVICE_URL || '/api/orders';
+
 export const orderService = {
   // Récupérer toutes les commandes
   getOrders: async () => {
     const token = localStorage.getItem('token');
-    const response = await axios.get('/api/orders', {
+    const response = await axios.get(`${API_URL}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -15,7 +17,7 @@ export const orderService = {
   // Créer une nouvelle commande
   createOrder: async (orderData) => {
     const token = localStorage.getItem('token');
-    const response = await axios.post('/api/orders', orderData, {
+    const response = await axios.post(`${API_URL}`, orderData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -27,7 +29,7 @@ export const orderService = {
   updateOrderStatus: async (orderId, status) => {
     const token = localStorage.getItem('token');
     const response = await axios.patch(
-      `/api/orders/${orderId}/status`,
+      `${API_URL}/${orderId}/status`,
       { status },
       {
         headers: {
