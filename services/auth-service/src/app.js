@@ -3,11 +3,10 @@ import cors from 'cors';
 import { connectDB } from './config/database.js';
 import authRoutes from './routes/authRoutes.js';
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({
+  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
+});
 
-
-
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3001;

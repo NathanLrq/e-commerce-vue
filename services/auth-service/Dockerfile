@@ -1,25 +1,30 @@
-# Builder Node.js
+# Build
 FROM node:18-alpine AS builder
 
-WORKDIR /app
-COPY package*.json ./
-RUN npm install --omit=dev
-
-# Image finale sécurisée
-FROM node:18-alpine
-
-# Créer un utilisateur non-root
+# Crée un utilisateur non-root
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 WORKDIR /app
 
-COPY --from=builder /app/node_modules ./node_modules
+COPY package*.json ./
+
+RUN npm install --omit=dev
+
 COPY . .
 
-# Environnement de production
-ENV NODE_ENV=production
+COPY .env.production ./
+COPY .env.development ./
 
-# Exécuter en tant que non-root
+# Exécution
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app /app
+
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+ENV NODE_ENV=production
 USER appuser
 
 EXPOSE 3001
