@@ -4,7 +4,10 @@ import dotenv from 'dotenv';
 import { connectDB } from './config/database.js';
 import orderRoutes from './routes/orderRoutes.js';
 
-dotenv.config();
+dotenv.config(
+{
+  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
+});
 
 const app = express();
 const port = process.env.PORT || 3002;
