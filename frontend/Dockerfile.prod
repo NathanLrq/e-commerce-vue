@@ -1,0 +1,11 @@
+# Étape finale : image minimale avec Nginx
+FROM nginx:alpine
+
+# Copie les fichiers statiques construits en local
+COPY dist/ /usr/share/nginx/html
+
+# Optionnel : si tu veux configurer le routage SPA
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

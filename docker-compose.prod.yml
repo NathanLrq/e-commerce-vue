@@ -1,0 +1,109 @@
+version: "3.8"
+
+services:
+  # === MongoDB AUTH ===
+  mongo-auth:
+    image: mongo:6
+    container_name: mongo-auth
+    volumes:
+      - mongo_auth_data:/data/db
+    networks:
+      - backend
+    restart: always
+    expose:
+      - "27017"
+
+  # === MongoDB PRODUCT ===
+  mongo-product:
+    image: mongo:6
+    container_name: mongo-product
+    volumes:
+      - mongo_product_data:/data/db
+    networks:
+      - backend
+    restart: always
+    expose:
+      - "27017"
+
+  # === MongoDB ORDER ===
+  mongo-order:
+    image: mongo:6
+    container_name: mongo-order
+    volumes:
+      - mongo_order_data:/data/db
+    networks:
+      - backend
+    restart: always
+    expose:
+      - "27017"
+
+  # === AUTH SERVICE ===
+  auth-service:
+    image: nathanlrq/auth-service:prod
+    container_name: auth-service
+    restart: always
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./services/auth-service/.env.production
+    depends_on:
+      - mongo-auth
+    networks:
+      - backend
+    expose:
+      - "3000"
+
+  # === PRODUCT SERVICE ===
+  product-service:
+    image: nathanlrq/product-service:prod
+    container_name: product-service
+    restart: always
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./services/product-service/.env.production
+    depends_on:
+      - mongo-product
+    networks:
+      - backend
+    expose:
+      - "3001"
+
+  # === ORDER SERVICE ===
+  order-service:
+    image: nathanlrq/order-service:prod
+    container_name: order-service
+    restart: always
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./services/order-service/.env.production
+    depends_on:
+      - mongo-order
+    networks:
+      - backend
+    expose:
+      - "3002"
+
+  # === FRONTEND VUE ===
+  vue-frontend:
+    image: nathanlrq/vue-frontend:prod
+    container_name: vue-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - auth-service
+      - product-service
+      - order-service
+    networks:
+      - backend
+
+volumes:
+  mongo_auth_data:
+  mongo_product_data:
+  mongo_order_data:
+
+networks:
+  backend:
+    driver: bridge

@@ -1,0 +1,27 @@
+# Étape 1 : build
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY . .
+
+# Étape 2 : image finale sécurisée
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copier uniquement le nécessaire
+COPY --from=builder /app /app
+
+ENV NODE_ENV=production
+
+# Utilisateur non-root
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
+EXPOSE 3001
+
+CMD ["node", "src/app.js"]
