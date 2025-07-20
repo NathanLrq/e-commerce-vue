@@ -1,69 +1,111 @@
 version: "3.8"
 
 services:
-  mongo:
+  # === MongoDB pour AUTH ===
+  mongo-auth:
     image: mongo:6
-    container_name: mongo
+    container_name: mongo-auth
     ports:
-      - "27017:27017"
+      - "27017:27017"  # facultatif, uniquement pour debug local
     volumes:
-      - mongo_data:/data/db
+      - mongo_auth_data:/data/db
+    networks:
+      - backend
+
+  # === MongoDB pour PRODUCT ===
+  mongo-product:
+    image: mongo:6
+    container_name: mongo-product
+    volumes:
+      - mongo_product_data:/data/db
+    networks:
+      - backend
+
+  # === MongoDB pour ORDER ===
+  mongo-order:
+    image: mongo:6
+    container_name: mongo-order
+    volumes:
+      - mongo_order_data:/data/db
     networks:
       - backend
 
   auth-service:
     build:
       context: ./services/auth-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: auth-service
+    restart: unless-stopped
     ports:
       - "3001:3001"
+    volumes:
+      - ./services/auth-service/src:/app/src
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
     env_file:
       - ./services/auth-service/.env.development
     depends_on:
-      - mongo
+      - mongo-auth
     networks:
       - backend
 
   product-service:
     build:
       context: ./services/product-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: product-service
+    restart: unless-stopped
     ports:
-      - "3002:3002"
+      - "3000:3000"
+    volumes:
+      - ./services/product-service:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
     env_file:
       - ./services/product-service/.env.development
     depends_on:
-      - mongo
+      - mongo-product
     networks:
       - backend
 
   order-service:
     build:
       context: ./services/order-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: order-service
+    restart: unless-stopped
     ports:
-      - "3003:3003"
+      - "3002:3002"
+    volumes:
+      - ./services/order-service:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
     env_file:
       - ./services/order-service/.env.development
     depends_on:
-      - mongo
+      - mongo-order
     networks:
       - backend
 
   vue-frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: vue-frontend
+    restart: unless-stopped
+
     ports:
-      - "8080:80"
+      - "8080:8080"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     environment:
       - VITE_AUTH_SERVICE_URL=http://auth-service:3001
-      - VITE_PRODUCT_SERVICE_URL=http://product-service:3002
-      - VITE_ORDER_SERVICE_URL=http://order-service:3003
+      - VITE_PRODUCT_SERVICE_URL=http://product-service:3000
+      - VITE_ORDER_SERVICE_URL=http://order-service:3002
     depends_on:
       - auth-service
       - product-service
@@ -72,7 +114,9 @@ services:
       - backend
 
 volumes:
-  mongo_data:
+  mongo_auth_data:
+  mongo_product_data:
+  mongo_order_data:
 
 networks:
   backend:

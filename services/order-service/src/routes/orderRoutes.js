@@ -4,6 +4,11 @@ import { auth } from '../middleware/auth.js';
 
 const router = express.Router();
 
+// Pour le test
+router.get('/ping', (req, res) => {
+  res.json({ message: 'Order service is reachable' });
+});
+
 // Routes protégées par authentification
 router.use(auth);
 
