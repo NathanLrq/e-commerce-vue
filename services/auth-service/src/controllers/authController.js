@@ -46,7 +46,7 @@ export const register = async (req, res) => {
       );
   
       res.status(201).json({
-        message: 'Utilisateur créé avec succès',
+        message: 'Utilisateur été créé avec succès !!!',
         token,
         userId: user._id.toString()
       });
