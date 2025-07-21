@@ -27,7 +27,6 @@ services:
 
   auth-service:
     image: nathanlrq/auth-service:prod
-    restart: always
     environment:
       - NODE_ENV=production
     env_file:
@@ -36,10 +35,19 @@ services:
       - mongo-auth
     networks:
       - backend
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 
   product-service:
     image: nathanlrq/product-service:prod
-    restart: always
     environment:
       - NODE_ENV=production
     env_file:
@@ -48,10 +56,19 @@ services:
       - mongo-product
     networks:
       - backend
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 
   order-service:
     image: nathanlrq/order-service:prod
-    restart: always
     environment:
       - NODE_ENV=production
     env_file:
@@ -60,10 +77,18 @@ services:
       - mongo-order
     networks:
       - backend
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   vue-frontend:
     image: nathanlrq/vue-frontend:prod
-    restart: always
     ports:
       - "80:80"
     depends_on:
@@ -72,6 +97,16 @@ services:
       - order-service
     networks:
       - backend
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 
 volumes:
   mongo_auth_data:

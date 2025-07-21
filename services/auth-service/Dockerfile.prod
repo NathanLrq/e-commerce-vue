@@ -1,4 +1,4 @@
-# Étape 1 : build
+# build
 FROM node:18-alpine AS builder
 
 WORKDIR /app
@@ -8,7 +8,7 @@ RUN npm ci --only=production
 
 COPY . .
 
-# Étape 2 : image finale sécurisée
+# image finale sécurisée
 FROM node:18-alpine
 
 WORKDIR /app
