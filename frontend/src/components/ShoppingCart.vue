@@ -1,7 +1,7 @@
 <template>
   <div class="cart">
     <h2>Panier</h2>
-    <div v-if="cartItems.length === 0" class="empty-cart">
+    <div v-if="Array.isArray(cartItems) && cartItems.length === 0" class="empty-cart">
       Votre panier est vide
     </div>
     <div v-else class="cart-items">
@@ -105,9 +105,9 @@ export default {
 
     const isAddressValid = computed(() => {
       return (
-        shippingAddress.value.street.length > 0 &&
-        shippingAddress.value.city.length > 0 &&
-        shippingAddress.value.postalCode.length > 0
+        typeof addr.street === 'string' && addr.street.length > 0 &&
+        typeof addr.city === 'string' && addr.city.length > 0 &&
+        typeof addr.postalCode === 'string' && addr.postalCode.length > 0
       );
     });
 

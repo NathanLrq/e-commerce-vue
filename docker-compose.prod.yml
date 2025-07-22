@@ -35,6 +35,8 @@ services:
       - mongo-auth
     networks:
       - backend
+    ports:
+      - "3001:3001"
     deploy:
       replicas: 2
       restart_policy:
@@ -44,7 +46,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
 
   product-service:
     image: nathanlrq/product-service:prod
@@ -56,6 +57,8 @@ services:
       - mongo-product
     networks:
       - backend
+    ports:
+      - "3000:3000"
     deploy:
       replicas: 2
       restart_policy:
@@ -65,7 +68,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
 
   order-service:
     image: nathanlrq/order-service:prod
@@ -77,6 +79,8 @@ services:
       - mongo-order
     networks:
       - backend
+    ports:
+      - "3002:3002"
     deploy:
       replicas: 2
       restart_policy:
@@ -106,7 +110,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
 
 volumes:
   mongo_auth_data:
